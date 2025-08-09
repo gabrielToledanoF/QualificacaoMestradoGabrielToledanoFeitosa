@@ -1,7 +1,7 @@
 /* Código feito em cima do código da biblioteca Heltec para comunicação LoRa*/
 
 #include "LoRaWan_APP.h" //Biblioteca para LoRa
-#include "Arduino.h"
+#include "Arduino.h"  //Biblioteca Arduino, para uso do Esp32
 #include <WiFi.h> //Biblioteca pra WiFi
 #include <HTTPClient.h> //Biblioteca para HTTP
 #include <Time.h>  //Biblioteca pra Tempo
@@ -26,7 +26,7 @@
 
 
 #define RX_TIMEOUT_VALUE                            1000
-#define BUFFER_SIZE                                 251 // Define the payload size here
+#define BUFFER_SIZE                                 251 // Define o tamanho do Payload
 
 // NTP Config
 
@@ -34,7 +34,9 @@ const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = -4 * 3600; //GMT -4 horas
 const int   daylightOffset_sec = 0;
 struct tm timeinfo;
+// END NTP Config
 
+// LoRa Config
 char txpacket[BUFFER_SIZE];
 char rxpacket[BUFFER_SIZE];
 
@@ -46,10 +48,12 @@ int16_t rssi,rxSize;
 
 bool lora_idle = true;
 
+//End LoRa Config
+
 //Variáveis para HTTP
 
-const char WIFI_SSID[] = "Cequa-ABBC";//"gtf-pocox6";         // Rede de Internet a se conectar
-const char WIFI_PASSWORD[] = "irapuca11";//"redesemcipo"; // Senha da rede
+const char WIFI_SSID[] = "Troque_Para_O_Seu_WiFI"; // Rede de Internet a se conectar
+const char WIFI_PASSWORD[] = "Troque_Para_Sua_Senha";// Senha da rede
 
 String HOST_NAME   = "https://iotsapi.rcchome.com.br/"; //Host HTTP, não mudar
 
@@ -60,7 +64,6 @@ String outgoing;
 
 void setup() {
     Serial.begin(115200);
-    ///*
     //Setup LoRa
     Mcu.begin(HELTEC_BOARD,SLOW_CLK_TPYE);
     
@@ -75,8 +78,6 @@ void setup() {
                                LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
                                0, true, 0, 0, LORA_IQ_INVERSION_ON, true );
     //Fim Setup LoRa
-    //*/
-    
     
     //Wi-Fi Setup
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -90,10 +91,11 @@ void setup() {
     Serial.println("");
     Serial.println("Connectado Com Sucesso.");
     //End Wi-fi Setup
-
+    //NTP Setup
     // Init and get the time
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
     if(!getLocalTime(&timeinfo)) Serial.println("Failed to obtain time");
+    //End NTP Setup
   }
 
 
